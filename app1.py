@@ -212,30 +212,38 @@ def fetch_poster(movie_id):
 
 def recommend(movie):
 
-    index = movies[movies['title'] == movie].index[0]
+    movie_index = movies[
+        movies['title'] == movie
+    ].index[0]
 
-    distances = sorted(
-        list(enumerate(similarity[index])),
+    distances = cosine_similarity(
+        vectors[movie_index].reshape(1, -1),
+        vectors
+    )[0]
+
+    movies_list = sorted(
+        list(enumerate(distances)),
         reverse=True,
         key=lambda x: x[1]
-    )
+    )[1:6]
 
     recommended_movie_names = []
     recommended_movie_posters = []
 
-    for i in distances[1:6]:
-
-        movie_id = movies.iloc[i[0]].id
-
-        recommended_movie_posters.append(
-            fetch_poster(movie_id)
-        )
+    for i in movies_list:
 
         recommended_movie_names.append(
             movies.iloc[i[0]].title
         )
 
-    return recommended_movie_names, recommended_movie_posters
+        recommended_movie_posters.append(
+            fetch_poster(i[0])
+        )
+
+    return (
+        recommended_movie_names,
+        recommended_movie_posters
+    )
 
 
 # ---------------------------------------------------
@@ -258,7 +266,7 @@ vectors = cv.fit_transform(
     movies['tags']
 ).toarray()
 
-similarity = cosine_similarity(vectors)
+
 
 # ---------------------------------------------------
 # HEADER SECTION
