@@ -217,7 +217,7 @@ def recommend(movie):
     ].index[0]
 
     distances = cosine_similarity(
-        vectors[movie_index].reshape(1, -1),
+        vectors[movie_index],
         vectors
     )[0]
 
@@ -264,7 +264,7 @@ cv = CountVectorizer(
 
 vectors = cv.fit_transform(
     movies['tags']
-).toarray()
+)
 
 
 
